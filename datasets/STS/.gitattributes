@@ -1,3 +1,0 @@
-*.csv filter=lfs diff=lfs merge=lfs -text
-*.pos filter=lfs diff=lfs merge=lfs -text
-*.neg filter=lfs diff=lfs merge=lfs -text
