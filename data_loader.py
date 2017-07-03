@@ -65,5 +65,3 @@ def load_MR_data():
     print('vocab size:',len(word_to_ix),'label size:',len(label_to_ix))
     print('loading data done!')
     return train_data,dev_data,test_data,word_to_ix,label_to_ix
-
-load_MR_data()
