@@ -33,44 +33,75 @@ class LSTMClassifier(nn.Module):
 
 
 
-def train():
-    training_data, word_to_ix, label_to_ix = data_loader.load_data()
-    print(training_data)
-    print(word_to_ix)
-    print(label_to_ix)
+def get_accuracy(truth, pred):
+     assert len(truth)==len(pred)
+     right = 0
+     for i in range(len(truth)):
+         if truth[i]==pred[i]:
+             right += 1.0
+     return right/len(truth)
 
+def train():
+    train_data, dev_data, test_data, word_to_ix, label_to_ix = data_loader.load_MR_data()
     EMBEDDING_DIM = 6
     HIDDEN_DIM = 6
     EPOCH = 5
-
     model = LSTMClassifier(embedding_dim=EMBEDDING_DIM,hidden_dim=HIDDEN_DIM,
                            vocab_size=len(word_to_ix),label_size=len(label_to_ix))
     loss_function = nn.NLLLoss()
     optimizer = optim.Adam(model.parameters(),lr = 1e-3)
 
     for i in range(EPOCH):
-        avg_loss = 0.0
-        count = 0
-        for sent, label in training_data:
+        train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i)
+        evaluate(model,dev_data,loss_function,word_to_ix,label_to_ix,'dev')
 
-            # Also, we need to clear out the hidden state of the LSTM,
-            # detaching it from its history on the last instance.
-            model.hidden = model.init_hidden()
-            sent = data_loader.prepare_sequence(sent, word_to_ix)
-            label = data_loader.prepare_label(label, label_to_ix)
-            pred = model(sent)
-            model.zero_grad()
-            loss = loss_function(pred, label)
-            avg_loss += loss.data[0]
+def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
+    model.eval()
+    avg_loss = 0.0
+    truth_res = []
+    pred_res = []
 
-            count+=1
-            print('epoch :%d iterations :%d loss :%g' % (i, count, loss.data[0]))
+    for sent, label in data:
+        truth_res.append(label_to_ix[label])
+        # detaching it from its history on the last instance.
+        model.hidden = model.init_hidden()
+        sent = data_loader.prepare_sequence(sent, word_to_ix)
+        label = data_loader.prepare_label(label, label_to_ix)
+        pred = model(sent)
+        pred_label = pred.data.max(1)[1].numpy()
+        pred_res.append(pred_label)
+        # model.zero_grad() # should I keep this when I am evaluating the model?
+        loss = loss_function(pred, label)
+        avg_loss += loss.data[0]
+    avg_loss /= len(data)
+    print(name + ' avg_loss:%g train acc:%g' % (avg_loss, get_accuracy(truth_res, pred_res)))
 
-            loss.backward()
-            optimizer.step()
-        # torch.save(model.state_dict(), 'model' + str(i + 1) + '.pth')
-        print('the average loss after completion of %d epochs is %g'
-              % ((i + 1), (avg_loss / len(training_data))))
+def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i):
+    model.train()
+    avg_loss = 0.0
+    count = 0
+    truth_res = []
+    pred_res = []
+    for sent, label in train_data:
+        truth_res.append(label_to_ix[label])
+        # detaching it from its history on the last instance.
+        model.hidden = model.init_hidden()
+        sent = data_loader.prepare_sequence(sent, word_to_ix)
+        label = data_loader.prepare_label(label, label_to_ix)
+        pred = model(sent)
+        pred_label = pred.data.max(1)[1].numpy()
+        pred_res.append(pred_label)
+        model.zero_grad()
+        loss = loss_function(pred, label)
+        avg_loss += loss.data[0]
+        count += 1
+        if count % 500 == 0:
+            print('epoch: %d iterations: %d loss :%g' % (i, count, loss.data[0]))
 
+        loss.backward()
+        optimizer.step()
+    avg_loss /= len(train_data)
+    print('epoch: %d done! \n train avg_loss:%g , acc:%g'%(i, avg_loss, get_accuracy(truth_res,pred_res)))
+    # torch.save(model.state_dict(), 'model' + str(i + 1) + '.pth')
 
 train()
