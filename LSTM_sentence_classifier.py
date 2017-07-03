@@ -44,19 +44,23 @@ def get_accuracy(truth, pred):
 
 def train():
     train_data, dev_data, test_data, word_to_ix, label_to_ix = data_loader.load_MR_data()
-    EMBEDDING_DIM = 6
-    HIDDEN_DIM = 6
-    EPOCH = 5
+    EMBEDDING_DIM = 50
+    HIDDEN_DIM = 50
+    EPOCH = 100
+    best_dev_acc = 0.0
     model = LSTMClassifier(embedding_dim=EMBEDDING_DIM,hidden_dim=HIDDEN_DIM,
                            vocab_size=len(word_to_ix),label_size=len(label_to_ix))
     loss_function = nn.NLLLoss()
     optimizer = optim.Adam(model.parameters(),lr = 1e-3)
 
     for i in range(EPOCH):
-        print('epoch: %d done!' % i)
+        print('epoch: %d start!' % i)
         train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i)
-        evaluate(model,dev_data,loss_function,word_to_ix,label_to_ix,'dev')
-        evaluate(model,test_data,loss_function,word_to_ix,label_to_ix,'test')
+        dev_acc = evaluate(model,dev_data,loss_function,word_to_ix,label_to_ix,'dev')
+        test_acc = evaluate(model, test_data, loss_function, word_to_ix, label_to_ix, 'test')
+        if dev_acc > best_dev_acc:
+            print('New Best Dev!!!')
+            torch.save(model.state_dict(), 'mr_best_model_acc_' + str(int(test_acc*10000)) + '.model')
 
 def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
     model.eval()
@@ -77,7 +81,9 @@ def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
         loss = loss_function(pred, label)
         avg_loss += loss.data[0]
     avg_loss /= len(data)
-    print(name + ' avg_loss:%g train acc:%g' % (avg_loss, get_accuracy(truth_res, pred_res)))
+    acc = get_accuracy(truth_res, pred_res)
+    print(name + ' avg_loss:%g train acc:%g' % (avg_loss, acc ))
+    return acc
 
 def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i):
     model.train()
@@ -105,7 +111,6 @@ def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_t
         optimizer.step()
     avg_loss /= len(train_data)
     print('epoch: %d done! \n train avg_loss:%g , acc:%g'%(i, avg_loss, get_accuracy(truth_res,pred_res)))
-    # torch.save(model.state_dict(), 'model' + str(i + 1) + '.pth')
 
 train()
 
