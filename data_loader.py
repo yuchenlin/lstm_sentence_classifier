@@ -8,11 +8,13 @@ SEED = 1
 
 # input: a sequence of tokens, and a token_to_index dictionary
 # output: a LongTensor variable to encode the sequence of idxs
-def prepare_sequence(seq, to_ix):
-    return autograd.Variable(torch.LongTensor([to_ix[w] for w in seq.split(' ')]))
+def prepare_sequence(seq, to_ix, cuda=False):
+    var = autograd.Variable(torch.LongTensor([to_ix[w] for w in seq.split(' ')]))
+    return var
 
-def prepare_label(label,label_to_ix):
-    return autograd.Variable(torch.LongTensor([label_to_ix[label]]))
+def prepare_label(label,label_to_ix, cuda=False):
+    var = autograd.Variable(torch.LongTensor([label_to_ix[label]]))
+    return var
 
 def build_token_to_ix(sentences):
     token_to_ix = dict()

@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import data_loader
+torch.set_num_threads(8)
 torch.manual_seed(1)
 
 class LSTMClassifier(nn.Module):
@@ -52,8 +53,10 @@ def train():
     optimizer = optim.Adam(model.parameters(),lr = 1e-3)
 
     for i in range(EPOCH):
+        print('epoch: %d done!' % i)
         train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i)
         evaluate(model,dev_data,loss_function,word_to_ix,label_to_ix,'dev')
+        evaluate(model,test_data,loss_function,word_to_ix,label_to_ix,'test')
 
 def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
     model.eval()
@@ -105,3 +108,4 @@ def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_t
     # torch.save(model.state_dict(), 'model' + str(i + 1) + '.pth')
 
 train()
+
