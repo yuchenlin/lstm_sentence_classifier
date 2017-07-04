@@ -99,7 +99,8 @@ def load_mr(text_field, label_field, batch_size):
     label_field.build_vocab(train_data, dev_data, test_data)
     print('building batches')
     train_iter, dev_iter, test_iter = data.Iterator.splits(
-        (train_data, dev_data, test_data), batch_sizes=(batch_size, len(dev_data), len(test_data)),repeat=False
+        (train_data, dev_data, test_data), batch_sizes=(batch_size, len(dev_data), len(test_data)),repeat=False,
+        device = -1
     )
 
     return train_iter, dev_iter, test_iter
