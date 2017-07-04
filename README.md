@@ -1,2 +1,1 @@
-# t-lstm
-Transferable LSTM cell
+# LSTM-based Models for Sentence Classification in PyTorch
