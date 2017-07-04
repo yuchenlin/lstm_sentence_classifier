@@ -48,7 +48,7 @@ def get_accuracy(truth, pred):
      return right/len(truth)
 
 def train():
-    EMBEDDING_DIM = 50
+    EMBEDDING_DIM = 100
     HIDDEN_DIM = 50
     EPOCH = 100
     BATCH_SIZE = 10
