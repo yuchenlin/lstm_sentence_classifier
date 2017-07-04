@@ -1,1 +1,1 @@
-# LSTM based Models for Sentence Classification
+# LSTM-based Models for Sentence Classification in PyTorch
