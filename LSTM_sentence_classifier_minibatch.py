@@ -117,6 +117,7 @@ def train_epoch(model, train_iter, loss_function, optimizer, text_field, label_f
         sent, label = batch.text, batch.label
         label.data.sub_(1)
         truth_res += list(label.data)
+        model.batch_size = len(label.data)
         model.hidden = model.init_hidden()# detaching it from its history on the last instance.
         pred = model(sent)
         pred_label = pred.data.max(1)[1].numpy()
