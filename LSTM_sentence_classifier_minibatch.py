@@ -57,9 +57,7 @@ def train():
     label_field = data.Field(sequential=False)
     train_iter, dev_iter , test_iter = classification_datasets.load_mr(text_field, label_field, batch_size=BATCH_SIZE)
 
-
     best_dev_acc = 0.0
-
     model = LSTMClassifier(embedding_dim=EMBEDDING_DIM,hidden_dim=HIDDEN_DIM,
                            vocab_size=len(text_field.vocab),label_size=len(label_field.vocab)-1, batch_size=BATCH_SIZE)
     loss_function = nn.NLLLoss()
