@@ -54,8 +54,8 @@ def train():
     model = LSTMClassifier(embedding_dim=EMBEDDING_DIM,hidden_dim=HIDDEN_DIM,
                            vocab_size=len(word_to_ix),label_size=len(label_to_ix))
     loss_function = nn.NLLLoss()
-    #optimizer = optim.Adam(model.parameters(),lr = 1e-3)
-    optimizer = torch.optim.SGD(model.parameters(), lr = 1e-2)
+    optimizer = optim.Adam(model.parameters(),lr = 1e-3)
+    #optimizer = torch.optim.SGD(model.parameters(), lr = 1e-2)
     no_up = 0
     for i in range(EPOCH):
         random.shuffle(train_data)
