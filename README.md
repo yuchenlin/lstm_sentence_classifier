@@ -4,12 +4,9 @@ This repo is aiming for reproducing the sentence classifcation experiments in Mo
 
 ## Datasets:
 
-### IMDB Sentiment Classification: 
-https://drive.google.com/file/d/0B8yp1gOBCztyN0JaMDVoeXhHWm8/ 
-
-Train+dev = 600,000 (imdb.neg+imdb.pos)
-
-Test = 2,000 (rt_critics.test)
-
+### 1. IMDB Sentiment Classification: 
+    https://drive.google.com/file/d/0B8yp1gOBCztyN0JaMDVoeXhHWm8/ 
+    Train+dev = 600,000 (imdb.neg+imdb.pos)
+    Test = 2,000 (rt_critics.test)
 
 
