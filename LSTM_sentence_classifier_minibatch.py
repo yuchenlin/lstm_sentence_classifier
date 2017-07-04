@@ -25,7 +25,6 @@ class LSTMClassifier(nn.Module):
         self.hidden2label = nn.Linear(hidden_dim, label_size)
         self.hidden = self.init_hidden()
 
-
     def init_hidden(self):
         # the first is the hidden h
         # the second is the cell  c
@@ -57,11 +56,14 @@ def train():
     label_field = data.Field(sequential=False)
     train_iter, dev_iter , test_iter = classification_datasets.load_mr(text_field, label_field, batch_size=BATCH_SIZE)
 
+    text_field.vocab.load_vectors(wv_type='glove.6B', wv_dim=100)
 
     best_dev_acc = 0.0
 
-    model = LSTMClassifier(embedding_dim=EMBEDDING_DIM,hidden_dim=HIDDEN_DIM,
-                           vocab_size=len(text_field.vocab),label_size=len(label_field.vocab)-1, batch_size=BATCH_SIZE)
+    model = LSTMClassifier(embedding_dim=EMBEDDING_DIM, hidden_dim=HIDDEN_DIM,
+                           vocab_size=len(text_field.vocab),label_size=len(label_field.vocab)-1,
+                            batch_size=BATCH_SIZE)
+
     loss_function = nn.NLLLoss()
     optimizer = optim.Adam(model.parameters(), lr = 1e-3)
 
@@ -88,7 +90,6 @@ def evaluate(model, eval_iter, loss_function,  name ='dev'):
     avg_loss = 0.0
     truth_res = []
     pred_res = []
-    model.cpu()
     for batch in eval_iter:
         sent, label = batch.text, batch.label
         label.data.sub_(1)
@@ -112,7 +113,6 @@ def train_epoch(model, train_iter, loss_function, optimizer, text_field, label_f
     count = 0
     truth_res = []
     pred_res = []
-    model.cpu()
     for batch in train_iter:
         sent, label = batch.text, batch.label
         label.data.sub_(1)
