@@ -63,7 +63,7 @@ def train():
     model = LSTMClassifier(embedding_dim=EMBEDDING_DIM, hidden_dim=HIDDEN_DIM,
                            vocab_size=len(text_field.vocab),label_size=len(label_field.vocab)-1,
                             batch_size=BATCH_SIZE)
-
+    model.embed.weight.data = text_field.vocab.vectors
     loss_function = nn.NLLLoss()
     optimizer = optim.Adam(model.parameters(), lr = 1e-3)
 
