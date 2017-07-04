@@ -20,9 +20,13 @@ This repo is aiming for reproducing the sentence classifcation experiments in Mo
 ## Performance 
 ### 1. LSTM-Softmax Classifier without MiniBatch or Pretrained Embedding
     "LSTM_sentence_classifier.py"
-    Remark: This model is the simplest version of LSTM-Softmax Classifier. It doesn't use mini-batch or pretrained word embedding. Note that there is not fixed lenght of the sentences.
+    Remark: 
+    This model is the simplest version of LSTM-Softmax Classifier. 
+    It doesn't use mini-batch or pretrained word embedding. 
+    Note that there is not fixed lenght of the sentences.
     Its performance with Adam(lr = 1e-3) is 76.1 in terms of accuracy on MR dataset. 
-    It is slower with Adam than with SGD, but the performance is much better. However, it's unreasonable to use such code to train a very large dataset like IMDB.
+    It is slower with Adam than with SGD, but the performance is much better. 
+    However, it's unreasonable to use such code to train a very large dataset like IMDB.
     
 
 
