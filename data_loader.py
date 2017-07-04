@@ -4,6 +4,8 @@ import torch
 import torch.autograd as autograd
 import codecs
 import random
+import torch.utils.data as Data
+
 SEED = 1
 
 # input: a sequence of tokens, and a token_to_index dictionary
@@ -23,7 +25,7 @@ def build_token_to_ix(sentences):
         for token in sent.split(' '):
             if token not in token_to_ix:
                 token_to_ix[token] = len(token_to_ix)
-
+    token_to_ix['<pad>'] = len(token_to_ix)
     return token_to_ix
 
 def build_label_to_ix(labels):
@@ -67,3 +69,8 @@ def load_MR_data():
     print('vocab size:',len(word_to_ix),'label size:',len(label_to_ix))
     print('loading data done!')
     return train_data,dev_data,test_data,word_to_ix,label_to_ix
+
+
+def load_MR_data_batch():
+
+    pass

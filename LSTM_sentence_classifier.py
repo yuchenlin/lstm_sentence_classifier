@@ -68,7 +68,7 @@ def train():
             best_dev_acc = dev_acc
             os.system('rm mr_best_model_acc_*.model')
             print('New Best Dev!!!')
-            torch.save(model.state_dict(), 'mr_best_model_acc_' + str(int(test_acc*10000)) + '.model')
+            torch.save(model.state_dict(), 'best_models/mr_best_model_acc_' + str(int(test_acc*10000)) + '.model')
             no_up = 0
         else:
             no_up += 1
@@ -98,6 +98,8 @@ def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
     print(name + ' avg_loss:%g train acc:%g' % (avg_loss, acc ))
     return acc
 
+
+
 def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i):
     model.train()
     
@@ -105,7 +107,11 @@ def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_t
     count = 0
     truth_res = []
     pred_res = []
+    batch_sent = []
+
     for sent, label in train_data:
+
+
         truth_res.append(label_to_ix[label])
         # detaching it from its history on the last instance.
         model.hidden = model.init_hidden()
