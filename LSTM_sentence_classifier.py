@@ -5,8 +5,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import data_loader
+import os
+import random
 torch.set_num_threads(8)
 torch.manual_seed(1)
+random.seed(1)
 
 class LSTMClassifier(nn.Module):
 
@@ -51,16 +54,26 @@ def train():
     model = LSTMClassifier(embedding_dim=EMBEDDING_DIM,hidden_dim=HIDDEN_DIM,
                            vocab_size=len(word_to_ix),label_size=len(label_to_ix))
     loss_function = nn.NLLLoss()
-    optimizer = optim.Adam(model.parameters(),lr = 1e-3)
-
+    #optimizer = optim.Adam(model.parameters(),lr = 1e-3)
+    optimizer = torch.optim.SGD(model.parameters(), lr = 1e-2)
+    no_up = 0
     for i in range(EPOCH):
+        random.shuffle(train_data)
         print('epoch: %d start!' % i)
         train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i)
+        print('now best dev acc:',best_dev_acc)
         dev_acc = evaluate(model,dev_data,loss_function,word_to_ix,label_to_ix,'dev')
         test_acc = evaluate(model, test_data, loss_function, word_to_ix, label_to_ix, 'test')
         if dev_acc > best_dev_acc:
+            best_dev_acc = dev_acc
+            os.system('rm mr_best_model_acc_*.model')
             print('New Best Dev!!!')
             torch.save(model.state_dict(), 'mr_best_model_acc_' + str(int(test_acc*10000)) + '.model')
+            no_up = 0
+        else:
+            no_up += 1
+            if no_up >= 10:
+                exit()
 
 def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
     model.eval()
@@ -87,6 +100,7 @@ def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
 
 def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i):
     model.train()
+    
     avg_loss = 0.0
     count = 0
     truth_res = []
